@@ -1,9 +1,15 @@
 pipeline {
     agent any
 
+    parameters {
+        string(
+            name: 'FIBONACCI_COUNT',
+            defaultValue: '10',
+            description: 'Enter number of Fibonacci terms to generate. Try 10 (SUCCESS) or -5 (FAILURE CASE).'
+        )
+    }
 
     environment {
-        // You can define environment variables here if needed
         PROJECT_NAME = 'fibonacci-series'
     }
 
@@ -18,7 +24,6 @@ pipeline {
         stage('Verify Environment') {
             steps {
                 echo 'Verifying Java and Maven versions...'
-                // Handles cross-platform execution (Windows or Linux/Unix agents)
                 script {
                     if (isUnix()) {
                         sh 'java -version'
@@ -69,20 +74,39 @@ pipeline {
                 }
             }
         }
+
+        stage('Execute Program with Input') {
+            steps {
+                echo "========================================="
+                echo "Executing Fibonacci with input: ${params.FIBONACCI_COUNT}"
+                echo "========================================="
+                script {
+                    if (isUnix()) {
+                        sh "java -jar target/fibonacci-series-1.0-SNAPSHOT.jar ${params.FIBONACCI_COUNT}"
+                    } else {
+                        bat "java -jar target/fibonacci-series-1.0-SNAPSHOT.jar ${params.FIBONACCI_COUNT}"
+                    }
+                }
+            }
+        }
     }
 
     post {
         always {
             echo 'Archiving JUnit test result reports...'
-            // Publishes test results in Jenkins UI
             junit testResults: '**/target/surefire-reports/*.xml', allowEmptyResults: true
         }
         success {
-            echo 'Build and tests succeeded! Archiving artifact JAR...'
+            echo '==================================================='
+            echo 'BUILD & EXECUTION SUCCEEDED!'
+            echo '==================================================='
             archiveArtifacts artifacts: 'target/*.jar', fingerprint: true
         }
         failure {
-            echo 'Build or tests failed. Please inspect test reports and console output.'
+            echo '==================================================='
+            echo 'BUILD / TEST FAILURE DETECTED!'
+            echo 'Inspect the console output above or the "Test Result" link in the sidebar for failure details.'
+            echo '==================================================='
         }
     }
 }

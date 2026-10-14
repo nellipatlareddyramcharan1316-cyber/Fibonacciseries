@@ -14,7 +14,8 @@ public class Main {
             try {
                 count = Integer.parseInt(args[0]);
             } catch (NumberFormatException e) {
-                System.err.println("Invalid number format. Using default count: " + count);
+                System.err.println("Error: Invalid number format for input: '" + args[0] + "'. Please enter an integer.");
+                System.exit(1);
             }
         }
 
@@ -34,7 +35,8 @@ public class Main {
                 System.out.printf("F(%d) = %d%n", i, fibonacciSeries.get(i));
             }
         } catch (IllegalArgumentException ex) {
-            System.err.println("Error: " + ex.getMessage());
+            System.err.println("Execution Error: " + ex.getMessage());
+            System.exit(1);
         }
         System.out.println("==========================================");
     }
