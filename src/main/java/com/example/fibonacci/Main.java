@@ -1,6 +1,7 @@
 package com.example.fibonacci;
 
 import java.util.List;
+import java.util.Scanner;
 
 /**
  * Main application class to run and demonstrate the Fibonacci generator.
@@ -16,6 +17,18 @@ public class Main {
             } catch (NumberFormatException e) {
                 System.err.println("Error: Invalid number format for input: '" + args[0] + "'. Please enter an integer.");
                 System.exit(1);
+            }
+        } else {
+            System.out.print("Enter the number of Fibonacci terms to generate: ");
+            Scanner scanner = new Scanner(System.in);
+            if (scanner.hasNextInt()) {
+                count = scanner.nextInt();
+            } else if (scanner.hasNext()) {
+                String input = scanner.next();
+                System.err.println("Error: '" + input + "' is not a valid integer. Please enter an integer.");
+                System.exit(1);
+            } else {
+                System.out.println("No input detected. Using default count: " + count);
             }
         }
 
